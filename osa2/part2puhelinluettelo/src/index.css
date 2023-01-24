@@ -1,10 +1,32 @@
 
+#italic {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: large;
+    color:  blueviolet;
+}
+
+
 li {
-    color: blue;
+    color: black;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+#num {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .successfuladd {
     color: green;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.notification {
+    color: red;
     background: lightgrey;
     font-size: 20px;
     border-style: solid;
