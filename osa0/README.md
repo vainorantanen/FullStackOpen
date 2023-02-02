@@ -1,0 +1,1 @@
+Tässä kansiossa on osan 0 tehtävät
