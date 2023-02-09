@@ -29,8 +29,8 @@ const App = () => {
 
   const [selected, setSelected] = useState(0)
 
-  console.log("selected", selected)
-  console.log("points", points)
+  //console.log("selected", selected)
+  //console.log("points", points)
 
   const shuffle = () => {
     const rand = getRandomInt(7);
@@ -66,7 +66,7 @@ const App = () => {
       }
     }
 
-    console.log(max, maxIndex)
+    //console.log(max, maxIndex)
 
     return (
       <div>
@@ -78,26 +78,12 @@ const App = () => {
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
       <p>has {points[selected]} votes</p>
-      <button onClick={() => setFirst(first+1)}>Vote the first</button>
-      <button onClick={() => setSecond(second+1)}>Vote the second</button>
-      <button onClick={() => setThird(third+1)}>Vote the third</button>
-      <button onClick={() => setFourth(fourth +1)}>Vote the 4th</button>
-      <button onClick={() => setFifth(fifth+1)}>Vote the 5th</button>
-      <button onClick={() => setSixth(sixth+1)}>Vote the 6th</button>
-      <button onClick={() => setSeventh(seventh+1)}>Vote the 7th</button>
-      <button onClick={() => voteCurrent(selected)}>Vote for currently shown anecdote</button>
-      <button onClick={() => shuffle()}>Next!</button>
-      <p>Votes:</p>
-      <p>first {first}</p>
-      <p>second: {second}</p>
-      <p>third {third}</p>
-      <p>fourth {fourth}</p>
-      <p>fifth: {fifth}</p>
-      <p>sixth: {sixth}</p>
-      <p>seventh {seventh}</p>
-      <p>Anecdote with most votes:</p>
+      <button onClick={() => voteCurrent(selected)}>Vote</button>
+      <button onClick={() => shuffle()}>Next anecdote</button>
+      <h1>Anecdote with most votes:</h1>
       {findMax()}
     </div>
   )
