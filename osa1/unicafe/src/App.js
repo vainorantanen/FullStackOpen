@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const StatisticLine = (props) => {
   return (
+    <tbody>
     <tr>
       <td>
         {props.text}
@@ -10,11 +11,12 @@ const StatisticLine = (props) => {
         {props.value}
       </td>
     </tr>
+    </tbody>
   )
 }
 
 const Statistics = (props) => {
-  console.log(props.stats)
+  //console.log(props.stats)
 
   if (props.stats.all === 0) {
     return (
