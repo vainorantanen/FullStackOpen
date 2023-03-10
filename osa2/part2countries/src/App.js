@@ -1,14 +1,33 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
+const api_key = process.env.REACT_APP_API_KEY;
+
+
+const api = {
+  key : api_key,
+  base : "https://api.openweathermap.org/data/2.5/"
+}
+
 const Name = ({country}) => {
   const [showState, setShowState] = useState(false)
-  
+  const [weather, setWeather] = useState([]);
+
+
+  const searchWeather = () => {
+    fetch(`${api.base}weather?q=${country.capital}&units=metric&APPID=${api.key}`)
+    .then(res => res.json())
+    .then(result => {
+      setWeather([result.main.temp, result.wind.speed]);
+      
+    })
+
+  }
   const showCountry = () => {
     if (showState === false) {
       return (
         <div>
-          No details jet
+          
         </div>
       )
     } else {
@@ -33,6 +52,13 @@ const Name = ({country}) => {
               </ul>
               <br></br>
               <img src={country.flags.png} alt="Lippu"/>
+              
+              <h1>Weather in {country.capital}</h1>
+              <button onClick={searchWeather}>Press to refresh weather data</button>
+              <p>
+                Temperature: {weather[0]} Celsius<br></br>
+                Wind: {weather[1]} m/s
+              </p>
             </div>
             
           )
@@ -59,10 +85,14 @@ const Filter = (props) => {
   )
 }
 
+
+
+
 const App = () => {
   const [countries, setCountries] = useState([]) 
   const [showAll, setShowAll] = useState(false)
   const [filterDetails, setNewFilter] = useState('')
+
 
   useEffect(() => {
     console.log('effect')
@@ -84,13 +114,11 @@ const App = () => {
   const countriesToShow = showAll ? countries : countries.filter(country => country.name.common.includes(filterDetails))
   
   if (!showAll && countriesToShow.length === 1) {
-    console.log("tässä maa")
-    console.log(countriesToShow[0])
+
     const listOfLanguages = []
     Object.keys(countriesToShow[0].languages).forEach(function(key, index) {
       listOfLanguages.push(countriesToShow[0].languages[key])
     })
-    console.log("kielet: ", listOfLanguages)
     
 
     return (
