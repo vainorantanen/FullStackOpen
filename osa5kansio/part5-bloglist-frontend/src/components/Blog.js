@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import blogService from '../services/blogs'
 
-const Blog = ({ blog, blogs, setBlogs, user }) => {
+const Blog = ({ blog,
+  handleLike,
+  handleBlogDelete,
+  loggedUser }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -12,55 +14,39 @@ const Blog = ({ blog, blogs, setBlogs, user }) => {
 
   const [showState, setShowState] = useState(false)
 
-  const likeBlog = async (blogId) => {
-    //console.log(blogs)
-    const findBlogToUpdate = blogs.find(b => b.id === blogId)
-    //console.log(findBlogToUpdate)
-    let newlikes = findBlogToUpdate.likes +1
-
-    const updatedBlog = { ...findBlogToUpdate, likes: newlikes }
-
-    blogService.update(blogId, updatedBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.map(b => b.id !== findBlogToUpdate.id ? b : returnedBlog))
-      })
-  }
-
-  const deleteBlog = (blogId) => {
-    const blogToDelete = blogs.find(b => b.id === blogId)
-
-    if (window.confirm(`Remove blog ${blogToDelete.title} by ${blogToDelete.author}`)) {
-      blogService.remove(blogId).then(removedBlog => {
-        blogs.map(b => b.id !== blogId ? b : removedBlog)
-      })
-      setBlogs(blogs.filter(b => b.id !== blogId))
+  const deleteButton = () => {
+    if (blog.user.username === loggedUser) {
+      return (
+        <button id='delete' onClick={() => handleBlogDelete(blog)}>Remove</button>
+      )
     }
   }
 
   if (!showState) {
     return (
       <div style={blogStyle}>
-        {blog.title} <button onClick={() => setShowState(!showState)}>
+        {blog.title} <button id='view' onClick={() => setShowState(!showState)}>
           View
         </button>
       </div>
     )
-  } else {
-    return (
-      <div style={blogStyle}>
-        {blog.title} <button onClick={() => setShowState(!showState)}>
-          Hide
-        </button>
-        <br></br>
-        {blog.url} <br></br>
-        likes: {blog.likes} <button onClick={() => likeBlog(blog.id)}>Like</button> <br></br>
-        {blog.author} <br></br>
-        {user.username === blog.user.username &&
-          <button onClick={() => deleteBlog(blog.id)}>Remove</button>
-        }
-      </div>
-    )
   }
+
+  return (
+    <div style={blogStyle}>
+      {blog.title} <button onClick={() => setShowState(!showState)}>
+          Hide
+      </button>
+      <br></br>
+      {blog.url} <br></br>
+        likes: {blog.likes} <button id='like' onClick={() => handleLike(blog)}>Like</button> <br></br>
+      {blog.author} <br></br>
+      <div>
+        {deleteButton()}
+      </div>
+    </div>
+  )
+
 }
 
 export default Blog

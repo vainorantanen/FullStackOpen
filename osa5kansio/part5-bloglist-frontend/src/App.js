@@ -72,6 +72,27 @@ const App = () => {
     }
   }
 
+  const handleLike = async (blog) => {
+    const likedBlog = await blogService.update(blog)
+    setBlogs(
+      blogs.map(blog =>
+        blog.id === likedBlog.id
+          ? { ...blog, likes: likedBlog.likes }
+          : blog
+      )
+    )
+  }
+
+  const handleBlogDelete = async (blog) => {
+    console.log(blog)
+    if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
+      await blogService.remove(blog.id)
+      setBlogs(
+        blogs.filter(currnetBlog => currnetBlog.id !== blog.id)
+      )
+    }
+  }
+
   const addBlog = async (blogObj) => {
     const returnedBlog = await blogService.create(blogObj)
     setBlogs(blogs.concat(returnedBlog))
@@ -98,7 +119,8 @@ const App = () => {
     return (
       <div>
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} user={user}/>
+          <Blog key={blog.id} blog={blog} handleLike={handleLike}
+            handleBlogDelete={handleBlogDelete} loggedUser={user.username}/>
         )}
       </div>
     )
