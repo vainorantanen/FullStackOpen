@@ -6,12 +6,13 @@ import ErrorNotification from './components/errorNotification'
 import SuccessNotification from './components/successNotification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 
 import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
@@ -20,7 +21,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -36,7 +37,6 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
     try {
       const user = await loginService.login({
         username, password,
@@ -44,10 +44,9 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
-      ) 
+      )
 
       blogService.setToken(user.token)
-      console.log(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -63,42 +62,15 @@ const App = () => {
   const handleLogout = async () => {
     //event.preventDefault()
     try {
-      console.log("trying to log out")
+      //console.log("trying to log out")
       window.localStorage.removeItem('loggedBlogappUser')
-      console.log("logged out succesfully")
+      //console.log("logged out succesfully")
     } catch (exception) {
-      console.log("logout failed")
+      console.log('logout failed')
       setTimeout(() => {
       }, 5000)
     }
   }
-
-  const loginForm = () => (
-    <div>
-      <h2>Login to the application</h2>
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-          <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-          <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-    </div>      
-  )
 
   const addBlog = async (blogObj) => {
     const returnedBlog = await blogService.create(blogObj)
@@ -112,12 +84,12 @@ const App = () => {
 
   function compare( a, b ) {
     if ( a.likes > b.likes ){
-      return -1;
+      return -1
     }
     if ( a.likes < b.likes ){
-      return 1;
+      return 1
     }
-    return 0;
+    return 0
   }
 
   const blogsInOrder = () => {
@@ -125,9 +97,9 @@ const App = () => {
     blogs.sort(compare)
     return (
       <div>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} user={user}/>
-      )}
+        {blogs.map(blog =>
+          <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} user={user}/>
+        )}
       </div>
     )
   }
@@ -137,19 +109,27 @@ const App = () => {
     <div>
       <ErrorNotification message={errorMessage} />
       <SuccessNotification message={successMessage} />
-      {!user && loginForm()}
-      {user && 
+      {!user &&
+        <LoginForm
+          username={username}
+          password={password}
+          handleUsernameChange={({ target }) => setUsername(target.value)}
+          handlePasswordChange={({ target }) => setPassword(target.value)}
+          handleSubmit={handleLogin}
+        />
+      }
+      {user &&
       <div>
         <p>{user.name} logged in</p>
         <button onClick={() => handleLogout()}>logout</button>
         <Togglable buttonLabel="create new blog" ref={blogFormRef}>
           <BlogForm createBlog={addBlog} />
         </Togglable>
-          <div>
-            {blogsInOrder()}
-          </div>
+        <div>
+          {blogsInOrder()}
         </div>
-        
+      </div>
+
       }
 
     </div>
