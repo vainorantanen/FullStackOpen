@@ -13,9 +13,8 @@ const Blog = ({ blog,
   }
 
   const [showState, setShowState] = useState(false)
-
   const deleteButton = () => {
-    if (blog.user.username === loggedUser) {
+    if (blog.user.username === loggedUser || blog.user.username === undefined) {
       return (
         <button id='delete' onClick={() => handleBlogDelete(blog)}>Remove</button>
       )
@@ -24,7 +23,7 @@ const Blog = ({ blog,
 
   if (!showState) {
     return (
-      <div style={blogStyle}>
+      <div style={blogStyle} id='blog'>
         {blog.title} <button id='view' onClick={() => setShowState(!showState)}>
           View
         </button>
@@ -33,7 +32,7 @@ const Blog = ({ blog,
   }
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} id='blog'>
       {blog.title} <button onClick={() => setShowState(!showState)}>
           Hide
       </button>
