@@ -94,13 +94,20 @@ const App = () => {
   }
 
   const addBlog = async (blogObj) => {
-    const returnedBlog = await blogService.create(blogObj)
-    setBlogs(blogs.concat(returnedBlog))
-    blogFormRef.current.toggleVisibility()
-    setSuccessMessage(`a new blog ${returnedBlog.title} added by ${returnedBlog.author}`)
-    setTimeout(() => {
-      setSuccessMessage(null)
-    }, 5000)
+    try {
+      const returnedBlog = await blogService.create(blogObj)
+      setBlogs(blogs.concat(returnedBlog))
+      blogFormRef.current.toggleVisibility()
+      setSuccessMessage(`a new blog ${returnedBlog.title} added by ${returnedBlog.author}`)
+      setTimeout(() => {
+        setSuccessMessage(null)
+      }, 5000)
+    } catch (exception) {
+      setErrorMessage('Input invalid')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
   }
 
   function compare( a, b ) {

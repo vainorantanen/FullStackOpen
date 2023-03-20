@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
-test('Blog renders the blogs title its url or number of likes by default.', () => {
+test('Blog renders the blogs title but not its url or number of likes by default.', () => {
   const blog = {
     title: 'Blogin otsikko',
     author: 'Blogin tekijä',

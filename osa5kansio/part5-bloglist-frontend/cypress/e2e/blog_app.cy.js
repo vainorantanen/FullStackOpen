@@ -1,4 +1,4 @@
-import { func } from "prop-types"
+import { func } from 'prop-types'
 
 describe('Blog app', function() {
   beforeEach(function() {
