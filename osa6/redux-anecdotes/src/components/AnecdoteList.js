@@ -27,7 +27,13 @@ function compare( a, b ) {
 
 const AnecdoteList = () => {
     const dispatch = useDispatch()
-    const anecdotes = useSelector(state => state)
+    const anecdotes = useSelector(state => {
+      if (state.filter === '') {
+        return state.anecdotes
+      }
+      return state.anecdotes.filter(a => a.content.toLowerCase().includes(state.filter.toLowerCase()))
+    })
+    //console.log("ANEC", anecdotes)
     return (
         <div>
             {anecdotes.sort(compare).map(anecdote =>
