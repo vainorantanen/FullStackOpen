@@ -1,3 +1,7 @@
+import { createSlice } from '@reduxjs/toolkit'
+import { setMessage } from './notificationReducer'
+import { useDispatch } from 'react-redux'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -18,18 +22,24 @@ const asObject = (anecdote) => {
 }
 
 const initialState = anecdotesAtStart.map(asObject)
-
-const anecdotesReducer = (state = initialState, action) => {
-  //console.log('state now: ', state)
-  //console.log('action', action)
-  switch (action.type) {
-    case 'NEW_ANECDOTE':
-      return state.concat(action.payload)
-    case 'VOTE':
-      const id = action.payload.id
-      //console.log('payload', id)
+const anecdoteSlice = createSlice({
+  name : 'anecdotes',
+  initialState : initialState,
+  reducers : {
+    createAnecdote(state, action) {
+      //console.log(action.payload)
+      const content = action.payload
+      state.push({
+        content,
+        id: getId(),
+        votes: 0
+      })
+    },
+    voteAnecdote(state, action) {
+      const id = action.payload
+      console.log('payload', id)
         const anecdoteToChange = state.find(n => n.id === id)
-        //console.log('V: ', anecdoteToChange)
+        console.log('V: ', anecdoteToChange)
         const changedAnec = {
           content: anecdoteToChange.content,
           id: getId(),
@@ -38,27 +48,9 @@ const anecdotesReducer = (state = initialState, action) => {
         return state.map(anec =>
           anec.id !== id ? anec : changedAnec 
         )
-      default:
-        return state
-  }
-}
-
-export const createAnecdote = (content) => {
-  return {
-    type: 'NEW_ANECDOTE',
-    payload: {
-      content,
-      id: getId(),
-      votes: 0
     }
   }
-}
+})
 
-export const voteAnecdote = (id) => {
-  return {
-    type: 'VOTE',
-    payload: { id }
-  }
-}
-
-export default anecdotesReducer
+export const {createAnecdote, voteAnecdote} = anecdoteSlice.actions
+export default anecdoteSlice.reducer
