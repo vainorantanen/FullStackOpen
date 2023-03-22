@@ -14,26 +14,23 @@ const AnecdoteForm = () => {
       const anecdotes = queryClient.getQueryData('anecdotes')
       queryClient.setQueryData('anecdotes', anecdotes.concat(newAnecdote))
     },
+    onError : () => {
+      notificationDispatch({type: "error"})
+      setTimeout(() => {
+        notificationDispatch({type: 'deletenotification'})
+      }, 5000)
+    }
   })
 
   const onCreate = (event) => {
     event.preventDefault()
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
-    console.log('new anecdote')
-    if (content.length >= 5) {
-      notificationDispatch({type: "add", anecdote: content})
-      newAnecdoteMutation.mutate({content, votes: 0})
-      setTimeout(() => {
-        notificationDispatch({type: 'deletenotification'})
-      }, 5000)
-    } else {
-      console.log("anecdote is too short")
-      notificationDispatch({type: "error"})
-      setTimeout(() => {
-        notificationDispatch({type: 'deletenotification'})
-      }, 5000)
-    }
+    notificationDispatch({type: "add", anecdote: content})
+    newAnecdoteMutation.mutate({content, votes: 0})
+    setTimeout(() => {
+      notificationDispatch({type: 'deletenotification'})
+    }, 5000)
 }
 
   return (
