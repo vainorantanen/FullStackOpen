@@ -17,11 +17,26 @@ const useField = (type) => {
 
 const useResource = (baseUrl) => {
   const [resources, setResources] = useState([])
+  const [refreshKey, setRefreshKey] = useState(0)
+  
+  useEffect(() => {
+    console.log('effect')
+    //if (baseUrl !== '') {
+    axios
+      .get(baseUrl)
+      .then(response => {
+        console.log('promise fulfilled')
+        //console.log("RESDATA", response.data)
+        setResources(response.data)
+      })
+    
+  }, [refreshKey])
 
-  // ...
-
-  const create = (resource) => {
-    // ...
+  const create = async (resource) => {
+    const response = await axios.post(baseUrl, resource)
+    console.log("RESDATA ADD: ", response.data)
+    setRefreshKey(oldkey => oldkey+1)
+    return response.data
   }
 
   const service = {
