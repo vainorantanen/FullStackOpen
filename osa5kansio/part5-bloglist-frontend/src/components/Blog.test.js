@@ -1,101 +1,61 @@
-import React from 'react'
-import '@testing-library/jest-dom/extend-expect'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import Blog from './Blog'
+import React from "react";
+import "@testing-library/jest-dom/extend-expect";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
-test('Blog renders the blogs title but not its url or number of likes by default.', () => {
+import Blog from "./Blog";
+
+describe("Blog", () => {
   const blog = {
-    title: 'Blogin otsikko',
-    author: 'Blogin tekijä',
-    url: 'google.com',
-    likes: 10
-  }
-  const loggedUser = ''
-  const handleBlogDelete = () => null
-  const handleLike = () => null
+    title: "Goto considered harmful",
+    author: "Edsger Dijkstra",
+    url: "google.com",
+    likes: 1,
+  };
 
-  const component = render(
-    <Blog
-      blog={blog}
-      loggedUser={loggedUser}
-      handleBlogDelete={handleBlogDelete}
-      handleLike={handleLike}
-    />
-  )
+  const likeHandler = jest.fn();
 
-  expect(component.container).toHaveTextContent(
-    'Blogin otsikko'
-  )
-  expect(component.container).not.toHaveTextContent(
-    'google.com'
-  )
-  expect(component.container).not.toHaveTextContent(
-    10
-  )
-})
+  beforeEach(() => {
+    render(
+      <Blog
+        blog={blog}
+        remove={jest.fn()}
+        canRemove={true}
+        like={likeHandler}
+      />
+    );
+  });
 
-test('Blogs url and number of likes are shown when view button clicked.', async () => {
-  const blog = {
-    title: 'Blogin otsikko',
-    author: 'Blogin tekijä',
-    url: 'google.com',
-    likes: 10,
-    user: 'Rauno'
-  }
-  const loggedUser = 'Rane'
-  const handleBlogDelete = () => null
-  const handleLike = () => null
+  test("renders only title and author by default", () => {
+    screen.getByText(blog.title, { exact: false });
+    screen.getByText(blog.author, { exact: false });
 
-  const component = render(
-    <Blog
-      blog={blog}
-      loggedUser={loggedUser}
-      handleBlogDelete={handleBlogDelete}
-      handleLike={handleLike}
-    />
-  )
+    const ulrElement = screen.queryByText(blog.url, { exact: false });
+    expect(ulrElement).toBeNull();
 
-  const user = userEvent.setup()
-  const button = screen.getByText('View')
-  await user.click(button)
+    const likesElement = screen.queryByText("likes", { exact: false });
+    expect(likesElement).toBeNull();
+  });
 
-  expect(component.container).toHaveTextContent(
-    'google.com'
-  )
-  expect(component.container).toHaveTextContent(
-    10
-  )
-})
+  test("renders also details when asked to be shown", async () => {
+    const user = userEvent.setup();
+    const button = screen.getByText("show");
+    await user.click(button);
 
-test('clicking the like button calls event handler twice when pressed twice', async () => {
-  const blog = {
-    title: 'Blogin otsikko',
-    author: 'Blogin tekijä',
-    url: 'google.com',
-    likes: 10,
-    user: 'Rauno'
-  }
-  const loggedUser = 'Rane'
+    screen.getByText(blog.url, { exact: false });
+    screen.getByText(`likes ${blog.likes}`, { exact: false });
+  });
 
-  const mockHandler = jest.fn()
-  const handleBlogDelete = () => null
+  test("if liked twice, ", async () => {
+    const user = userEvent.setup();
 
-  render(
-    <Blog
-      blog={blog}
-      loggedUser={loggedUser}
-      handleBlogDelete={handleBlogDelete}
-      handleLike={mockHandler}
-    />
-  )
+    const showButton = screen.getByText("show");
+    await user.click(showButton);
 
-  const user = userEvent.setup()
-  const viewButton = screen.getByText('View')
-  await user.click(viewButton)
-  const likeButton = screen.getByText('Like')
-  await user.click(likeButton)
-  await user.click(likeButton)
+    const likeButton = screen.getByText("like");
+    await user.click(likeButton);
+    await user.click(likeButton);
 
-  expect(mockHandler.mock.calls).toHaveLength(2)
-})
+    expect(likeHandler.mock.calls).toHaveLength(2);
+  });
+});
