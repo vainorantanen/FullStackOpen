@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { /*useState*/ useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 //import blogService from "./services/blogs";
 import loginService from "./services/login";
@@ -11,11 +11,13 @@ import Togglable from "./components/Togglable";
 import { setNotification } from "./reducers/notificationReducer";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteBlog, initializeBlogs, likeBlog } from "./reducers/blogReducer";
+import { initializeUser } from "./reducers/userReducer";
+import { setUser } from "./reducers/userReducer";
 
 const App = () => {
   const dispatch = useDispatch()
   //const [blogs, setBlogs] = useState([]);
-  const [user, setUser] = useState("");
+  //const [user, setUser] = useState("");
   //const [info, setInfo] = useState({ message: null });
   const blogs = useSelector(({blogs}) => {
     //console.log("BLOGS: ", blogs)
@@ -24,11 +26,15 @@ const App = () => {
 
   const blogFormRef = useRef();
 
+  const user = useSelector(({user}) => {
+    //console.log("USER: ", user)
+    return user
+  })
+  
   useEffect(() => {
-    const user = storageService.loadUser();
-    setUser(user);
-  }, []);
-
+    dispatch(initializeUser())
+  }, [dispatch]);
+  
   useEffect(() => {
     dispatch(initializeBlogs())
   }, [dispatch])
@@ -54,6 +60,7 @@ const App = () => {
       setUser(user);
       storageService.saveUser(user);
       //notifyWith("welcome!");
+      dispatch(initializeUser(user))
       dispatch(setNotification("welcome!", 5))
     } catch (e) {
       //notifyWith("wrong username or password", "error");
@@ -65,6 +72,7 @@ const App = () => {
     setUser(null);
     storageService.removeUser();
     //notifyWith("logged out");
+    dispatch(initializeUser(null))
     dispatch(setNotification("logged out", 5))
   };
   /*
@@ -117,7 +125,7 @@ const App = () => {
         {user.name} logged in
         <button onClick={logout}>logout</button>
       </div>
-      <Togglable buttonLabel="new note" ref={blogFormRef}>
+      <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <NewBlog /*createBlog={createBlog}*/ />
       </Togglable>
       <div>
