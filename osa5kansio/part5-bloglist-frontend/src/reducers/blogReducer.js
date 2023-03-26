@@ -45,4 +45,12 @@ export const deleteBlog = (blog) => {
     }
 }
 
+export const commentBlog = (blog, comment) => {
+  return async dispatch => {
+    await blogService.comment(blog, comment)
+    const blogs = await blogService.getAll()
+    dispatch(setBlogs(blogs))
+  }
+}
+
 export default blogSlice.reducer
