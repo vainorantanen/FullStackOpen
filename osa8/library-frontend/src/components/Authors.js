@@ -1,47 +1,21 @@
 import { useQuery } from '@apollo/client'
-import { ALL_AUTHORS, SET_BIRTH } from '../queries'
-//import AuthorBirth from './AuthorBirth'
-import { useState } from 'react'
-import { useMutation } from '@apollo/client'
-import Select from 'react-select'
+import { ALL_AUTHORS } from '../queries'
+import SetBirthYear from './SetBirthYear'
 
 const Authors = (props) => {
-  const [name, setName] = useState({})
-  const [year, setYear] = useState('')
-  const [ editAuthor ] =  useMutation(SET_BIRTH, {
-    refetchQueries: [ {query : ALL_AUTHORS} ]
-  })
-
-  const hanleSubmit = async (event) => {
-    event.preventDefault()
-    var setBornTo = parseInt(year)
-    console.log("TÄS NIMI", name)
-    console.log(name.value, setBornTo)
-    const nimi = name.value
-    editAuthor({variables: { nimi, setBornTo }})
-
-    setName('')
-    setYear('')
-}
-
-  const result = useQuery(ALL_AUTHORS)
-  if (result.loading)  {
-    return <div>loading...</div>
-  }
-  const authors = result.data.allAuthors
-
+  const res = useQuery(ALL_AUTHORS)
+  
   if (!props.show) {
     return null
   }
 
-  const options = (authors) => {
-    var lista = []
-    authors.forEach(element => {
-      lista.push({ value: element.name, label : element.name})
-    });
-    console.log(lista)
-    return lista
-  } 
+
+  if (res.loading) {
+    return <div>loading</div>
+  }
+
+  const authors = res.data.allAuthors
+  console.log("AUTHORISSA", authors)
   return (
     <div>
       <h2>authors</h2>
@@ -61,22 +35,10 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <h2>Set birthyear</h2>
-        <form onSubmit={hanleSubmit}>
-          <div>
-          <Select options={options(authors)}
-            onChange={setName}
-          />
-          </div>
-            <div>
-                born
-                <input
-                    value={year}
-                    onChange={({target}) => setYear(target.value)}
-                />
-            </div>
-            <button type='submit'>Update author</button>
-        </form>
+      <div>
+        <h2>Set Birthyear</h2>
+        <SetBirthYear authors={authors}/>
+      </div>
     </div>
   )
 }
