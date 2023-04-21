@@ -180,7 +180,12 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
+      console.log(args)
       if (!args.author && !args.genre) {
+        return Book.find({})
+      }
+
+      if (args.genre === 'all') {
         return Book.find({})
       }
       // oleteteaan, tehtävässä haetaan sitä, että molemmat argumentit antaessa palautetaan
@@ -305,7 +310,6 @@ const resolvers = {
     editAuthor: async (root, args, context) => {
 
       const currentUser = context.currentUser
-
       if (!currentUser) {
         throw new GraphQLError('not authenticated', {
           extensions: {

@@ -1,9 +1,43 @@
 import { useQuery } from "@apollo/client"
-import { ALL_BOOKS } from "../queries"
+import { BOOKS, ALL_BOOKS } from "../queries"
+import { useState } from "react";
 
+const GenreButtons = ({setGenre}) => {
+  const res = useQuery(ALL_BOOKS)
+  const genres = []
+  
+  if (res.loading) {
+    return <div>Buttons loading</div>
+  }
+
+  const books = res.data.allBooks
+
+  books.forEach(b => {
+    b.genres.forEach(gen => {
+      genres.push(gen)
+    })
+  });
+  // remove duplicates
+  const genresNoDups = Array.from(new Set(genres)).filter(str => str.trim() !== '');
+  //console.log(genresNoDups)
+  return (
+    <div>
+      {genresNoDups.map((buttonLabel, index) => (
+        <button key={index} onClick={() => setGenre(buttonLabel)}>
+          {buttonLabel}
+        </button>
+      ))}
+      <button onClick={() => setGenre('all')}>All</button>
+    </div>
+  )
+}
 
 const Books = (props) => {
-  const res = useQuery(ALL_BOOKS)
+  const [genre, setGenre] = useState("all")
+  const res = useQuery(BOOKS, {
+    variables: { genre },
+    skip: !genre
+  })
 
   if (!props.show) {
     return null
@@ -14,7 +48,8 @@ const Books = (props) => {
   }
   //console.log(res.data)
   const books = res.data.allBooks;
-  console.log(books)
+  //console.log(books)
+
   return (
     <div>
       <h2>books</h2>
@@ -35,6 +70,7 @@ const Books = (props) => {
           ))}
         </tbody>
       </table>
+      <GenreButtons setGenre={setGenre}/>
     </div>
   )
 }
