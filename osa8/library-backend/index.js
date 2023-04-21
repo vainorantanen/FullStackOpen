@@ -245,15 +245,25 @@ const resolvers = {
         author: author.toObject(),
       };
     },
-    editAuthor: (root, args) => {
-      const author = authors.find(a => a.name === args.name)
+    editAuthor: async (root, args) => {
+      const author = await Author.findOne({name: args.name})
       if (!author) {
         return null
       }
-  
-      const updatedAuthor = { ...author, born: args.setBornTo }
-      authors = authors.map(a => a.name === args.name ? updatedAuthor : a)
-      return updatedAuthor
+      author.born = args.setBornTo
+      //console.log(author)
+      try {
+        await author.save()
+      } catch (error) {
+        throw new GraphQLError('Saving editAuth failed', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name,
+            error
+          }
+        })
+      }
+      return author
     }
   }
 }
