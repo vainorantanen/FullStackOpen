@@ -25,15 +25,17 @@ query {
 `
 
 export const ADD_BOOK = gql`
-mutation createBook($title: String!, $author: String!, $pub: Int!, $genres: [String]) {
+mutation createBook($title: String!, $author: String!, $pub: Int!, $genres: [String!]!) {
     addBook(
       title: $title,
       author: $author,
       published: $pub,
       genres: $genres
     ) {
-      title,
-      author
+      title
+      author {
+        name
+      }
     }
   }
 `
