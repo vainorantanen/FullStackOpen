@@ -25,27 +25,27 @@ const parseArgs = (args: string[]): countValuesEx => {
       return {
         array,
         target,
-      }
+      };
     } else {
       throw new Error('Provided values were not numbers!');
     }
-  }
+  };
 
-const calculateExercises = (arr: number[], target: number): Result => {
+export const calculateExercises = (arr: number[], target: number): Result => {
 
-    let avg = arr.reduce((acc, curr) => acc + curr, 0)/arr.length;
+    const avg = arr.reduce((acc, curr) => acc + curr, 0)/arr.length;
     // lasketaan rating
-    var rated = 1
-    var ratingdesc = 'Great job!'
+    let rated = 1;
+    let ratingdesc = 'Great job!';
     if (avg == target) {
-        rated = 2
-        ratingdesc = 'Got to the goal!'
+        rated = 2;
+        ratingdesc = 'Got to the goal!';
     } else if (avg > target) {
-        rated = 3
-        ratingdesc =  'Great job!'
+        rated = 3;
+        ratingdesc =  'Great job!';
     } else {
-        rated = 1
-        ratingdesc = 'You can do better!'
+        rated = 1;
+        ratingdesc = 'You can do better!';
     }
 
     return {
@@ -56,14 +56,14 @@ const calculateExercises = (arr: number[], target: number): Result => {
         ratingDescription: ratingdesc,
         target: target,
         average: avg
-    }
-}
+    };
+};
 
 try {
     const { array, target } = parseArgs(process.argv);
-    console.log(calculateExercises(array, target))
+    console.log(calculateExercises(array, target));
   } catch (error: unknown) {
-    let errorMessage = 'Something bad happened.'
+    let errorMessage = 'Something bad happened.';
     if (error instanceof Error) {
       errorMessage += ' Error: ' + error.message;
     }
