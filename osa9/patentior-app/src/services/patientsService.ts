@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import patientsEntries from '../../data/patients';
-import { NoNSensitivePatientsEntry, PatientsEntry } from '../types';
-
+import { NewPatientEntry, NoNSensitivePatientsEntry, PatientsEntry } from '../types';
+import { v1 as uuid } from 'uuid';
 
 const getEntries = (): PatientsEntry[] => {
     //console.log(dianoseEntries);
@@ -18,7 +19,23 @@ const getNonSensitiveEntries = (): NoNSensitivePatientsEntry[] => {
     }));
   };
 
+  const addPatient = (entry: NewPatientEntry
+    ): PatientsEntry => {
+      const id = uuid();
+
+      const newPatientEntry = {
+        id: id,
+        ...entry
+      };
+  
+      patientsEntries.push(newPatientEntry);
+      return newPatientEntry;
+  
+  };
+
+
 export default {
     getEntries,
-    getNonSensitiveEntries
+    getNonSensitiveEntries,
+    addPatient
 };
