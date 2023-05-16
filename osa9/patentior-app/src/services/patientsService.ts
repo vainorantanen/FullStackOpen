@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import patientsEntries from '../../data/patients';
-import { NewPatientEntry, NoNSensitivePatientsEntry, PatientsEntry } from '../types';
+import { Entry, EntryWithoutId, NewPatientEntry, NoNSensitivePatientsEntry, PatientsEntry } from '../types';
 import { v1 as uuid } from 'uuid';
 
 const getEntries = (): PatientsEntry[] => {
@@ -36,11 +36,26 @@ const getNonSensitiveEntries = (): NoNSensitivePatientsEntry[] => {
       return newPatientEntry;
   
   };
+  
+  const addNewEntry = (entry: EntryWithoutId, patientId: string
+    ): Entry => {
+      const entryId = uuid();
+
+      const newEntry = {
+        id: entryId,
+        ...entry
+      };
+  
+      patientsEntries.find(p => p.id === patientId)?.entries.push(newEntry);
+      return newEntry;
+  
+  };
 
 
 export default {
     getEntries,
     getNonSensitiveEntries,
     addPatient,
+    addNewEntry,
     findById
 };

@@ -1,4 +1,8 @@
-import { Gender, NewPatientEntry } from './types';
+import { DianoseEntry, EntryWithoutId, Gender, NewPatientEntry,
+ BaseEntryWihtoutId, 
+ Discharge,
+ SickLeave,
+ HealthCheckRating} from './types';
 
 const parseName = (name: unknown): string => {
     if (!name || !isString(name)) {
@@ -51,9 +55,43 @@ const parseName = (name: unknown): string => {
   
     return occupation;
   };
-  
 
-  const toNewPatientEntry = (object: unknown): NewPatientEntry => {
+  const parseDiagnosisCodes = (object: unknown): Array<DianoseEntry['code']> =>  {
+    if (!object || typeof object !== 'object') {
+      // we will just trust the data to be in correct form
+      return [] as Array<DianoseEntry['code']>;
+    }
+  
+    return object as Array<DianoseEntry['code']>;
+  };
+
+  const parseDischarge = (object: unknown): Discharge => {
+    if (!object || typeof object !== 'object' || !('date' in object) ||
+    !('criteria' in object)) {
+      return {} as Discharge;
+    }
+  
+    return object as Discharge;
+  };
+
+  const parseSickLeave = (object: unknown): SickLeave => {
+    if (!object ||  typeof object !== 'object' || !('startDate' in object)
+    || !('endDate' in object)) {
+      return {} as SickLeave;
+    }
+
+    return object as SickLeave;
+  };
+
+  const parseHealthCheckRating = (object: unknown): HealthCheckRating => {
+    if (!object || typeof object !== "number") {
+      throw new Error('Incorrect or missing healthrating');
+    }
+
+    return object;
+  };
+
+  export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
     if ( !object || typeof object !== 'object' ) {
       throw new Error('Incorrect or missing data');
     }
@@ -74,5 +112,78 @@ const parseName = (name: unknown): string => {
   
     throw new Error('Incorrect data: some fields are missing');
   };
-
-export default toNewPatientEntry;
+ 
+  export const toNewEntryAdd = (object: unknown): EntryWithoutId => {
+    if (!object || typeof object !== 'object') {
+      throw new Error('Incorrect or missing data');
+    }
+  
+    if (
+      'description' in object &&
+      'date' in object &&
+      'specialist' in object &&
+      'type' in object
+    ) {
+      const baseEntry: BaseEntryWihtoutId = {
+        description: parseName(object.description),
+        date: parseDate(object.date),
+        specialist: parseName(object.specialist),
+      };
+  
+      if ('diagnosisCodes' in object) {
+        baseEntry.diagnosisCodes = parseDiagnosisCodes(object.diagnosisCodes);
+      }
+  
+      let entry: EntryWithoutId;
+  
+      switch (object.type) {
+        case 'Hospital':
+          if ('discharge' in object) {
+            entry = {
+              ...baseEntry,
+              type: 'Hospital',
+              discharge: parseDischarge(object.discharge),
+            };
+          } else {
+            throw new Error('Incorrect data: discharge field is missing for Hospital entry');
+          }
+          break;
+  
+        case 'OccupationalHealthcare':
+          if ('employerName' in object) {
+            entry = {
+              ...baseEntry,
+              type: 'OccupationalHealthcare',
+              employerName: parseName(object.employerName),
+            };
+  
+            if ('sickLeave' in object) {
+              entry.sickLeave = parseSickLeave(object.sickLeave);
+            }
+          } else {
+            throw new Error('Incorrect data: employerName field is missing for OccupationalHealthcare entry');
+          }
+          break;
+  
+        case 'HealthCheck':
+          if ('healthCheckRating' in object) {
+            entry = {
+              ...baseEntry,
+              type: 'HealthCheck',
+              healthCheckRating: parseHealthCheckRating(object.healthCheckRating),
+            };
+          } else {
+            throw new Error('Incorrect data: healthCheckRating field is missing for HealthCheck entry');
+          }
+          break;
+  
+        default:
+          throw new Error('Incorrect data: unknown entry type');
+      }
+  
+      return entry;
+    }
+  
+    throw new Error('Incorrect data: some fields are missing');
+  };
+  
