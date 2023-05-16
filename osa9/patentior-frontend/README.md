@@ -1,0 +1,1 @@
+patenriorin frontend on repositoriossa: https://github.com/vainorantanen/patientor
