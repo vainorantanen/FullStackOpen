@@ -60,8 +60,6 @@ const parseName = (name: unknown): string => {
   };
 
   function checkItemsExistInArray(array1: unknown, array2: string[]): boolean {
-    console.log("1 ", array1);
-    console.log("2 ", array2);
     if (!Array.isArray(array1)) {
       return false;
     }
@@ -93,8 +91,8 @@ const parseName = (name: unknown): string => {
 
   const parseDischarge = (object: unknown): Discharge => {
     if (!object || typeof object !== 'object' || !('date' in object) ||
-    !('criteria' in object)) {
-      return {} as Discharge;
+    !('criteria' in object) || !isString(object.date) || !isDate(object.date)) {
+      throw new Error('Incorrect or missing discharge date');
     }
   
     return object as Discharge;
@@ -102,8 +100,9 @@ const parseName = (name: unknown): string => {
 
   const parseSickLeave = (object: unknown): SickLeave => {
     if (!object ||  typeof object !== 'object' || !('startDate' in object)
-    || !('endDate' in object)) {
-      return {} as SickLeave;
+    || !('endDate' in object) || !isString(object.startDate) || !isString(object.endDate)
+    || !isDate(object.endDate) || !isDate(object.startDate)) {
+      throw new Error('Incorrect or missing sick leave dates');
     }
 
     return object as SickLeave;
