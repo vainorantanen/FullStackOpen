@@ -4,6 +4,9 @@ import { DianoseEntry, EntryWithoutId, Gender, NewPatientEntry,
  SickLeave,
  HealthCheckRating} from './types';
 
+import diagnoseService from './services/diagnoseService';
+
+
 const parseName = (name: unknown): string => {
     if (!name || !isString(name)) {
       throw new Error('Incorrect or missing name');
@@ -56,10 +59,33 @@ const parseName = (name: unknown): string => {
     return occupation;
   };
 
+  function checkItemsExistInArray(array1: unknown, array2: string[]): boolean {
+    console.log("1 ", array1);
+    console.log("2 ", array2);
+    if (!Array.isArray(array1)) {
+      return false;
+    }
+  
+    for (const item of array1) {
+      if (typeof item !== 'string' || !array2.includes(item)) {
+        return false;
+      }
+    }
+  
+    return true;
+  }
+
   const parseDiagnosisCodes = (object: unknown): Array<DianoseEntry['code']> =>  {
-    if (!object || typeof object !== 'object') {
+    // haetaan olemassa olevat diagnosikoodit
+    const codes = diagnoseService.getEntries().map(a => {
+      return a.code;
+    });
+    console.log("Olemassa olevat: ", codes);
+    console.log("obj: ", object);
+    if (!object || typeof object !== 'object' || !checkItemsExistInArray(object, codes)) {
       // we will just trust the data to be in correct form
-      return [] as Array<DianoseEntry['code']>;
+      //return [] as Array<DianoseEntry['code']>;
+      throw new Error('Incorrect or missing diagnosis codes');
     }
   
     return object as Array<DianoseEntry['code']>;
@@ -84,7 +110,8 @@ const parseName = (name: unknown): string => {
   };
 
   const parseHealthCheckRating = (object: unknown): HealthCheckRating => {
-    if (!object || typeof object !== "number") {
+    console.log(object);
+    if (!object || typeof object !== "number" || object < 0 || object > 3) {
       throw new Error('Incorrect or missing healthrating');
     }
 
