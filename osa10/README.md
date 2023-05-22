@@ -1,0 +1,1 @@
+tämän osan applikaatio on tehty repositorioon: https://github.com/vainorantanen/rate-repository-app
